@@ -1,11 +1,24 @@
 /* Definiciones externas para el sistema de colas simple */
 
+/* Se busca implementar M/M/m:(FIFO,cap,n) una fila varios servers   
+
+    M/M/m:
+     - (lamnda) Tasa de llegadas exponenciales
+     - (miu) Tasa de atencion exponenciales
+     - (m) numero de clienes
+    (FIFO,cap,n)
+    - (FIFO) Politica Fist In First Out (normal)
+    - (LIMITE_COLA) Capacidad clientes dentro al tiempo (limite cola)
+    - (n) numero de clientes totales que llegan
+
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "lcgrand.cpp"  /* Encabezado para el generador de numeros aleatorios */
 
-#define LIMITE_COLA 100  /* Capacidad maxima de la cola */
+#define LIMITE_COLA 100  /* Capacidad maxima de la cola (cap)  */
 #define OCUPADO      1  /* Indicador de Servidor Ocupado */
 #define LIBRE      0  /* Indicador de Servidor Libre */
 
@@ -43,17 +56,17 @@ int main(void)  /* Funcion Principal */
 
     /* Escribe en el archivo de salida los encabezados del reporte y los parametros iniciales */
 
-    fprintf(resultados, "Sistema de Colas Simple\n\n");
-    fprintf(resultados, "Tiempo promedio de llegada%11.3f minutos\n\n",
+    fprintf(resultados, "Simulador de Sistema de Colas Simple\n\n");
+    fprintf(resultados, "Tiempo promedio de llegada (lamnda) %11.3f minutos\n\n",
             media_entre_llegadas);
-    fprintf(resultados, "Tiempo promedio de atencion%16.3f minutos\n\n", media_atencion);
-    fprintf(resultados, "Numero de clientes%14d\n\n", num_esperas_requerido);
+    fprintf(resultados, "Tiempo promedio de atencion (miu) %16.3f minutos\n\n", media_atencion);
+    fprintf(resultados, "Numero de clientes (n)%14d\n\n", num_esperas_requerido);
 
     /* iInicializa la simulacion. */
 
     inicializar();
 
-    /* Corre la simulacion mientras no se llegue al numero de clientes especificaco en el archivo de entrada*/
+    /* Corre la simulacion mientras aÃºn existan clientes (n) dado en el archivo de entrada*/
 
     while (num_clientes_espera < num_esperas_requerido) {
 
@@ -162,7 +175,7 @@ void llegada(void)  /* Funcion de llegada */
 
         ++num_entra_cola;
 
-        /* Verifica si hay condición de desbordamiento */
+        /* Verifica si hay condiciï¿½n de desbordamiento */
 
         if (num_entra_cola > LIMITE_COLA) {
 
@@ -238,7 +251,7 @@ void salida(void)  /* Funcion de Salida. */
 
 void reportes(void)  /* Funcion generadora de reportes. */
 {
-    /* Calcula y estima los estimados de las medidas deseadas de desempeño */  
+    /* Calcula y estima los estimados de las medidas deseadas de desempeï¿½o */  
     fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
             total_de_esperas / num_clientes_espera);
     fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
