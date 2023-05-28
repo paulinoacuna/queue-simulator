@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <cmath> // Incluir la biblioteca cmath para la función tgamma
 #include "lcgrand.cpp" /* Encabezado para el generador de números aleatorios */
 
-#define LIMITE_COLA 100  /* Capacidad máxima de la cola */
+
+#include "erlangCalculator.cpp"  /* Calculadora erlang */
+
+#define LIMITE_COLA 10000  /* Capacidad máxima de la cola */
 #define OCUPADO      1    /* Indicador de servidor ocupado */
 #define LIBRE        0    /* Indicador de servidor libre */
 
@@ -13,6 +17,11 @@ float area_num_entra_cola, area_estado_servidor, media_entre_llegadas, media_ate
       total_de_esperas;
 FILE *parametros, *resultados;
 
+//Implementacion C Erlang
+
+float lambda;  // Tasa promedio de llegada de clientes al sistema
+float miu;  // Tasa promedio de servicio por servidor
+float C = 0.0;  // Fracción de tiempo en la que todos los servidores están ocupados
 
 
 void inicializar(void); //alg 1
@@ -94,6 +103,18 @@ int main(void)  /* Funcion Principal */
 
 void inicializar(void)  /* Funcion de inicializacion. */
 {
+
+    //Adecuacion de C erlang
+    lambda = media_entre_llegadas;  // Tasa promedio de llegada = 1 / media_entre_llegadas
+    
+    if(num_esperas_requerido >= 0 && num_esperas_requerido <= num_servidores){
+        media_entre_llegadas = num_esperas_requerido*media_atencion;
+    }else{
+         media_entre_llegadas = num_servidores*media_atencion;
+    }
+
+    C = erlangCalculator(lambda, media_entre_llegadas,num_servidores);
+
     /* Inicializa el reloj de la simulacion. */
 
     tiempo_simulacion = 0.0;
@@ -116,6 +137,7 @@ void inicializar(void)  /* Funcion de inicializacion. */
     tiempo_sig_evento[1] = tiempo_simulacion + expon(media_entre_llegadas);
     tiempo_sig_evento[2] = 1.0e+30;
 }
+
 
 
 void controltiempo(void)  /* Funcion controltiempo */
@@ -244,13 +266,19 @@ void salida(void)  /* Funcion de Salida. */
 void reportes(void)  /* Funcion generadora de reportes. */
 {
     /* Calcula y estima los estimados de las medidas deseadas de desempeño */
+    fprintf(resultados, "Probabilidad de que todos los servidores estén ocupados.%8.3f\n\n", C);
+    
     fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
             total_de_esperas / num_clientes_espera);
+    
     fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
             area_num_entra_cola / tiempo_simulacion);
+    
+    
     fprintf(resultados, "Uso promedio del servidor%15.3f\n\n",
             area_estado_servidor / tiempo_simulacion);
-    fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos", tiempo_simulacion);
+    fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos\n\n", tiempo_simulacion);
+
 }
 
 
@@ -271,6 +299,10 @@ void actualizar_estad_prom_tiempo(void)  /* Actualiza los acumuladores de área 
     {
         area_estado_servidor += estado_servidor[i] * time_since_last_event;
     }
+
+    //Implementacion C Erlang
+    
+
 }
 
 
