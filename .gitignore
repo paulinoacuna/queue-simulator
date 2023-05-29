@@ -2,3 +2,5 @@
 *.o
 .params
 .results
+build
+build/*
