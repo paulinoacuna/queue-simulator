@@ -43,13 +43,18 @@ void actualizar_estad_prom_tiempo(void); //alg 5 reportes finales
 float funcionPercentilExpon(float mean);
 
 
-int main(void)  /* Funcion Principal */
+int main(int argc, char* argv[])  /* Funcion Principal */
 {
     /* Abre los archivos de entrada y salida */
 
-    parametros = fopen("param.txt", "r");
-    resultados = fopen("result.txt", "w");
-
+    if (argc != 3)
+    {
+        printf("Uso: %s <archivo_parametros> <archivo_resultados>\n", argv[0]);
+        exit(1);
+    }
+    parametros = fopen(argv[1], "r");
+    resultados = fopen(argv[2], "w");
+    
     /* Especifica el numero de eventos para la funcion controltiempo. */
 
     num_eventos = 2;
