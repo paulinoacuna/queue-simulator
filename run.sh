@@ -37,7 +37,7 @@ $num_servidores" > "${dir_output_params}/param$i.txt"
 done
 
 # Compilamos el programa una vez
-g++ -o Erlang Sistema_mmm.cpp
+g++ -o Erlang Sistema_mmm.cpp moduls/inicializar.cpp moduls/controltiempo.cpp moduls/llegada.cpp moduls/salida.cpp moduls/reportes.cpp moduls/actualizar_estad_prom_tiempo.cpp
 
 # Iteramos sobre cada archivo de parámetros en el directorio
 for param_file in ${dir_output_params}/param*.txt; do
