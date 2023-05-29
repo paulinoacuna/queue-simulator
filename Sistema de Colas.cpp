@@ -251,14 +251,31 @@ void salida(void)  /* Funcion de Salida. */
 
 void reportes(void)  /* Funcion generadora de reportes. */
 {
-    /* Calcula y estima los estimados de las medidas deseadas de desempe�o */  
-    fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
-            total_de_esperas / num_clientes_espera);
-    fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
-            area_num_entra_cola / tiempo_simulacion);
-    fprintf(resultados, "Uso del servidor%15.3f\n\n",
-            area_estado_servidor / tiempo_simulacion);
-    fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos", tiempo_simulacion);
+    // /* Calcula y estima los estimados de las medidas deseadas de desempe�o */  
+    // fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
+    //         total_de_esperas / num_clientes_espera);
+    // fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
+    //         area_num_entra_cola / tiempo_simulacion);
+    // fprintf(resultados, "Uso del servidor%15.3f\n\n",
+    //         area_estado_servidor / tiempo_simulacion);
+    // fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos", tiempo_simulacion);
+
+     /* Verifica si se ha alcanzado el número requerido de clientes servidos */
+    if (num_clientes_espera < num_esperas_requerido) {
+        fprintf(resultados, "\n\nLa simulación ha terminado antes de servir al número requerido de clientes.\n");
+        return;
+    }
+
+    /* Calcula y escribe los estimados de las medidas deseadas de desempeño */
+    float espera_promedio = total_de_esperas / num_clientes_espera;
+    float num_promedio_en_cola = area_num_entra_cola / tiempo_simulacion;
+    float uso_del_servidor = area_estado_servidor / tiempo_simulacion;
+    
+    fprintf(resultados, "\n\nResultado de la simulación:\n");
+    fprintf(resultados, "Espera promedio en la cola: %11.3f minutos\n", espera_promedio);
+    fprintf(resultados, "Número promedio de clientes en cola: %10.3f\n", num_promedio_en_cola);
+    fprintf(resultados, "Porcentaje de uso del servidor: %15.3f%%\n", uso_del_servidor * 100);
+    fprintf(resultados, "Tiempo de terminación de la simulación: %12.3f minutos\n", tiempo_simulacion);
 }
 
 
