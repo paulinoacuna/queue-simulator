@@ -6,6 +6,11 @@
 
 
 #include "erlangCalculator.cpp"  /* Calculadora erlang */
+#include "./medidas/prom_clientes_cola.cpp"
+#include "./medidas/prom_clientes_sistema.cpp"
+#include "./medidas/prob_sistema_vacio.cpp"
+#include "./medidas/tiempo_cliente_sistema.cpp"
+#include "./medidas/tiempo_cliente_cola.cpp"
 
 #define LIMITE_COLA 10000  /* Capacidad máxima de la cola */
 #define OCUPADO      1    /* Indicador de servidor ocupado */
@@ -35,7 +40,7 @@ void salida(void); //alg 3 | func gestora de eventos tipo 1 y 2
 void reportes(void); 
 void actualizar_estad_prom_tiempo(void); //alg 5 reportes finales
 
-float expon(float mean);
+float funcionPercentilExpon(float mean);
 
 
 int main(void)  /* Funcion Principal */
@@ -108,12 +113,12 @@ void inicializar(void)  /* Funcion de inicializacion. */
     lambda = media_entre_llegadas;  // Tasa promedio de llegada = 1 / media_entre_llegadas
     
     if(num_esperas_requerido >= 0 && num_esperas_requerido <= num_servidores){
-        media_entre_llegadas = num_esperas_requerido*media_atencion;
+        media_atencion = num_esperas_requerido*media_atencion;
     }else{
-         media_entre_llegadas = num_servidores*media_atencion;
+         media_atencion = num_servidores*media_atencion;
     }
 
-    C = erlangCalculator(lambda, media_entre_llegadas,num_servidores);
+    C = erlangCalculator(lambda, media_atencion,num_servidores);
 
     /* Inicializa el reloj de la simulacion. */
 
@@ -134,7 +139,7 @@ void inicializar(void)  /* Funcion de inicializacion. */
 
     /* Inicializa la lista de eventos. */
 
-    tiempo_sig_evento[1] = tiempo_simulacion + expon(media_entre_llegadas);
+    tiempo_sig_evento[1] = tiempo_simulacion + funcionPercentilExpon(media_entre_llegadas);
     tiempo_sig_evento[2] = 1.0e+30;
 }
 
@@ -176,13 +181,14 @@ void controltiempo(void)  /* Funcion controltiempo */
 
 void llegada(void)  /* Funcion de llegada */
 {
-    //CAMBIOOOOOOOOOOOOOOOOOOOOOOO
     
     float espera;
 
     /* Programa la siguiente llegada */
-    tiempo_sig_evento[1] = tiempo_simulacion + expon(media_entre_llegadas);
+    
+    tiempo_sig_evento[1] = tiempo_simulacion + funcionPercentilExpon(media_entre_llegadas);
 
+    //printf("num exp%15.3f",funcionPercentilExpon(media_entre_llegadas));
     /* Revisa si todos los servidores están OCUPADOS */
     int i;
     for (i = 0; i < 10; i++) {
@@ -223,15 +229,13 @@ void llegada(void)  /* Funcion de llegada */
         estado_servidor[servidor_actual] = OCUPADO;
 
         /* Programa una salida (servicio terminado) */
-        tiempo_sig_evento[2] = tiempo_simulacion + expon(media_atencion);
+        tiempo_sig_evento[2] = tiempo_simulacion + funcionPercentilExpon(media_atencion);
     }
 }
 
 
 void salida(void)  /* Funcion de Salida. */
 {
-    //cambiooooooooooooooooooooooooooooooooooooo
-
     int i;
     float espera;
 
@@ -250,7 +254,7 @@ void salida(void)  /* Funcion de Salida. */
 
         /* Incrementa el número de clientes en espera y programa la salida. */
         ++num_clientes_espera;
-        tiempo_sig_evento[2] = tiempo_simulacion + expon(media_atencion);
+        tiempo_sig_evento[2] = tiempo_simulacion + funcionPercentilExpon(media_atencion);
 
         /* Mueve cada cliente en la cola (si los hay) una posición hacia adelante */
         for (i = 1; i <= num_entra_cola; ++i) {
@@ -265,18 +269,42 @@ void salida(void)  /* Funcion de Salida. */
 
 void reportes(void)  /* Funcion generadora de reportes. */
 {
+
+    fprintf(resultados, "=============================================================\n\n");
+    
+
+double P0 = prob_sistema_vacio(lambda,media_atencion,num_servidores);
+double Ls = prom_clientes_sistema(lambda,media_atencion,num_servidores,P0);
+double Lq = prom_clientes_cola (lambda,media_atencion, Ls);
+double Ws = tiempo_cliente_sistema(lambda,media_atencion,num_servidores,P0);
+double Wq = tiempo_cliente_cola(Ws,media_atencion);
+
     /* Calcula y estima los estimados de las medidas deseadas de desempeño */
-    fprintf(resultados, "Probabilidad de que todos los servidores estén ocupados.%8.3f\n\n", C);
+
+    //Erlang C
+    fprintf(resultados, "C Erlang | Probabilidad de que todos los servidores estén ocupados%8.3f\n\n", C);
     
-    fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
-            total_de_esperas / num_clientes_espera);
+    fprintf(resultados, "P0       | Probabilidad de 0 clientes en el sistema: %11.3f \n\n",P0);
+
+    fprintf(resultados, "Ls       | Numero promedio de clientes en el sistema%11.3f clientes\n\n",Ls);
+
+    fprintf(resultados, "Lq       | Numero promedio de clientes en la cola%11.3f clientes\n\n",Lq);
+
+    fprintf(resultados, "Ws       | Tiempo promedio de clientes en el sistema%11.3f minutos\n\n",Ws);
+
+    fprintf(resultados, "Wq       | Tiempo promedio de clientes en la cola%11.3f minutos\n\n",Wq);
+
+if((lambda/media_atencion)*10 >= 100){
+    fprintf(resultados, "Utilización por servidor: %15.3f%%\n",100.0);
+
+}else{
+    fprintf(resultados, "Utilización por servidor: %15.3f%%\n",(lambda/media_atencion)*10);
+
+}
+
     
-    fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
-            area_num_entra_cola / tiempo_simulacion);
-    
-    
-    fprintf(resultados, "Uso promedio del servidor%15.3f\n\n",
-            area_estado_servidor / tiempo_simulacion);
+    fprintf(resultados, "Utilización del Sistema: %15.3f%%\n\n",(1-P0)*100);
+
     fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos\n\n", tiempo_simulacion);
 
 }
@@ -300,15 +328,13 @@ void actualizar_estad_prom_tiempo(void)  /* Actualiza los acumuladores de área 
         area_estado_servidor += estado_servidor[i] * time_since_last_event;
     }
 
-    //Implementacion C Erlang
-    
-
 }
 
 
-float expon(float media)  /* Función generadora de la distribución exponencial */
+float funcionPercentilExpon(float media)  /* Función generadora percentil exponencial */
 {
     /* Retorna una variable aleatoria exponencial con media "media" */
-
-    return -media * log(lcgrand(1));
+    double aux = lcgrand(1);
+    //printf("Numero aleatorio generado: %f \n", aux);
+    return (-media * log(aux)/100);
 }
