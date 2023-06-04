@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "lcgrand.cpp"  /* Encabezado para el generador de numeros aleatorios */
+#include <random>
 
 #define LIMITE_COLA 100  /* Capacidad maxima de la cola (cap)  */
 #define OCUPADO      1  /* Indicador de Servidor Ocupado */
@@ -242,6 +243,9 @@ void salida(void)  /* Funcion de Salida. */
         ++num_clientes_espera;
         tiempo_sig_evento[2] = tiempo_simulacion + expon(media_atencion);
 
+       
+       
+
         /* Mueve cada cliente en la cola ( si los hay ) una posicion hacia adelante */
         for (i = 1; i <= num_entra_cola; ++i)
             tiempo_llegada[i] = tiempo_llegada[i + 1];
@@ -302,6 +306,13 @@ float expon(float media)  /* Funcion generadora de la exponencias */
 {
     /* Retorna una variable aleatoria exponencial con media "media"*/
 
-    return -media * log(lcgrand(1));
+    // Crear un U¬(0,1)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    int U = static_cast<int>(dis(gen) * 100);
+
+    return -media * log(lcgrand(U));
 }
 
