@@ -9,7 +9,7 @@ Numero de clientes (n)            50
 
 
 Resultado de la simulación:
-Espera promedio en la cola:       3.229 minutos
-Número promedio de clientes en cola:      0.045
-Porcentaje de uso del servidor:          12.298%
-Tiempo de terminación de la simulación:     3580.339 minutos
+Espera promedio en la cola:       2.303 minutos
+Número promedio de clientes en cola:      0.035
+Porcentaje de uso del servidor:          16.549%
+Tiempo de terminación de la simulación:     3268.032 minutos

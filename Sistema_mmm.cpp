@@ -3,6 +3,7 @@
 #include <math.h>
 #include <cmath> // Incluir la biblioteca cmath para la función tgamma
 #include "lcgrand.cpp" /* Encabezado para el generador de números aleatorios */
+#include <random>  // Incluir la biblioteca random para la distribución uniforme
 
 
 //#include "erlangCalculator.cpp"  /* Calculadora erlang */
@@ -120,8 +121,16 @@ int main(int argc, char* argv[])  /* Funcion Principal */
 
 float funcionPercentilExpon(float media)  /* Función generadora percentil exponencial */
 {
-    /* Retorna una variable aleatoria exponencial con media "media" */
-    double aux = lcgrand(1);
-    //printf("Numero aleatorio generado: %f \n", aux);
-    return (-media * log(aux)/100);
+
+    /* Retorna una variable aleatoria exponencial con media "media"*/
+
+    // Crear un U¬(0,1)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    int U = static_cast<int>(dis(gen) * 100);
+
+
+    return -media * log(lcgrand(U)/100);
 }
