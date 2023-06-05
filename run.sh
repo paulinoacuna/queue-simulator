@@ -16,7 +16,7 @@ num_esperas_requerido_max=100
 
 # Rango para el número de servidores
 num_servidores_min=1
-num_servidores_max=10
+num_servidores_max=50
 
 # Crear los directorios si no existen
 mkdir -p $dir_output_params
