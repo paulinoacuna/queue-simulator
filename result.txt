@@ -1,29 +1,15 @@
-Simulador de Sistema de Colas M/M/m
+Simulador de Sistema de Colas Simple
 
-Tiempo promedio de llegada (lambda):     700.000 minutos
+Tiempo promedio de llegada (lamnda)     700.000 minutos
 
-Tiempo promedio de atención (mu):            9.000 minutos
+Tiempo promedio de atencion (miu)            9.000 minutos
 
-Número de clientes requeridos (n):            100
+Numero de clientes (n)           100
 
-Número de servidores (m):             10
 
-=============================================================
 
-C Erlang | Probabilidad de que todos los servidores estén ocupados   0.361
-
-P0       | Probabilidad de 0 clientes en el sistema:       0.459 
-
-Ls       | Numero promedio de clientes en el sistema   1454.665 clientes
-
-Lq       | Numero promedio de clientes en la cola   1446.887 clientes
-
-Ws       | Tiempo promedio de clientes en el sistema     20.781 minutos
-
-Wq       | Tiempo promedio de clientes en la cola     20.770 minutos
-
-Utilización por servidor:          77.778%
-Utilización del Sistema:          54.057%
-
-Tiempo de terminacion de la simulacion     709.721 minutos
-
+Resultado de la simulación:
+Espera promedio en la cola:       0.063 minutos
+Número promedio de clientes en cola:      0.000
+Porcentaje de uso del servidor:           1.244%
+Tiempo de terminación de la simulación:    70867.273 minutos

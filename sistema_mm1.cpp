@@ -1,6 +1,6 @@
 /* Definiciones externas para el sistema de colas simple */
 
-/* Se busca implementar M/M/m:(FIFO,cap,n) una fila varios servers   
+/* Se busca implementar M/M/m:(FIFO,cap,n) una fila varios servers
 
     M/M/m:
      - (lamnda) Tasa de llegadas exponenciales
@@ -40,9 +40,10 @@ float expon(float mean);
 int main(void) /* Funcion Principal */
 {
     /* Abre los archivos de entrada y salida */
-    /* TODO: Reemplazar por la ruta absoluta del archivo*/
+    /* TODO: Reemplazar por la ruta absoluta del archivo si no se usa devcontainers*/
     parametros = fopen("/workspaces/queue-simulator/param.txt", "r");
-    resultados = fopen("result.txt", "w");
+    // parametros = fopen("param.txt", "r");
+    resultados = fopen("/workspaces/queue-simulator/result.txt", "w");
 
     /* Especifica el numero de eventos para la funcion controltiempo. */
 
@@ -253,7 +254,7 @@ void salida(void) /* Funcion de Salida. */
 
 void reportes(void) /* Funcion generadora de reportes. */
 {
-    // /* Calcula y estima los estimados de las medidas deseadas de desempe�o */  
+    // /* Calcula y estima los estimados de las medidas deseadas de desempe�o */
     // fprintf(resultados, "\n\nEspera promedio en la cola%11.3f minutos\n\n",
     //         total_de_esperas / num_clientes_espera);
     // fprintf(resultados, "Numero promedio en cola%10.3f\n\n",
@@ -262,8 +263,9 @@ void reportes(void) /* Funcion generadora de reportes. */
     //         area_estado_servidor / tiempo_simulacion);
     // fprintf(resultados, "Tiempo de terminacion de la simulacion%12.3f minutos", tiempo_simulacion);
 
-     /* Verifica si se ha alcanzado el número requerido de clientes servidos */
-    if (num_clientes_espera < num_esperas_requerido) {
+    /* Verifica si se ha alcanzado el número requerido de clientes servidos */
+    if (num_clientes_espera < num_esperas_requerido)
+    {
         fprintf(resultados, "\n\nLa simulación ha terminado antes de servir al número requerido de clientes.\n");
         return;
     }
@@ -272,7 +274,7 @@ void reportes(void) /* Funcion generadora de reportes. */
     float espera_promedio = total_de_esperas / num_clientes_espera;
     float num_promedio_en_cola = area_num_entra_cola / tiempo_simulacion;
     float uso_del_servidor = area_estado_servidor / tiempo_simulacion;
-    
+
     fprintf(resultados, "\n\nResultado de la simulación:\n");
     fprintf(resultados, "Espera promedio en la cola: %11.3f minutos\n", espera_promedio);
     fprintf(resultados, "Número promedio de clientes en cola: %10.3f\n", num_promedio_en_cola);
