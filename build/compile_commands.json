@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/workspaces/queue-simulator/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ -g -o CMakeFiles/queue-simulator.dir/sistema_mm1.cpp.o -c /workspaces/queue-simulator/sistema_mm1.cpp",
+  "file": "/workspaces/queue-simulator/sistema_mm1.cpp"
+}
+]
