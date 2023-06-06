@@ -16,12 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-<<<<<<<< HEAD:sistema_mm1.cpp
-#include "lcgrand.cpp" /* Encabezado para el generador de numeros aleatorios */
-========
 #include "lcgrand.cpp"  /* Encabezado para el generador de numeros aleatorios */
 #include <random>
->>>>>>>> 15860cd4b0f35f445b9fd157490d99e037a766fe:Sistema_de_Colas.cpp
 
 #define LIMITE_COLA 100 /* Capacidad maxima de la cola */
 #define OCUPADO 1       /* Indicador de Servidor Ocupado */
